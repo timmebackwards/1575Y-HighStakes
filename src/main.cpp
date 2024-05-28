@@ -118,9 +118,29 @@ ASSET(skillspath_txt);
 void autonomous() {
     // set chassis pose
     chassis.setPose(0, 0, 0);
-    // lookahead distance: 15 inches
-    // timeout: 2000 ms
-    chassis.follow(skillspath_txt, 15, 2000);
+    chassis.moveToPoint(-0.097, -18.491, 5000);
+    chassis.moveToPoint(-0.139, -42.31, 5000);
+    chassis.moveToPoint(23.61, -42.392, 5000);
+    chassis.moveToPoint(23.449, -18.538, 5000);
+    chassis.moveToPoint(23.411, -6.683, 5000);
+    chassis.moveToPoint(35.553, -18.668, 5000);
+    chassis.moveToPoint(41.324, -0.272, 5000);
+    chassis.moveToPoint(35.551, -65.796, 5000);
+    chassis.moveToPoint(26.466, -90.417, 5000);
+    chassis.moveToPoint(-23.793, -113.209, 5000);
+    chassis.moveToPoint(0.147, -88.931, 5000);
+    chassis.moveToPoint(-46.822, -89.245, 5000);
+    chassis.moveToPoint(-71.022, -89.516, 5000);
+    chassis.moveToPoint(-82.466, -65.884, 5000);
+    chassis.moveToPoint(-88.542, -130.899, 5000);
+    chassis.moveToPoint(-70.672, -41.904, 5000);
+    chassis.moveToPoint(-47.335, -41.904, 5000);
+    chassis.moveToPoint(-47.354, -18.547, 5000);
+    chassis.moveToPoint(-70.987, -18.216, 5000);
+    chassis.moveToPoint(-70.994, -6.682, 5000);
+    chassis.moveToPoint(-82.406, -18.647, 5000);
+    chassis.moveToPoint(-88.572, -0.977, 5000);
+    chassis.moveToPoint(-34.111, -52.982, 5000);
 }
 #pragma endregion
 
