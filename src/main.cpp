@@ -23,12 +23,8 @@ lemlib::Drivetrain drivetrain(&left_motors, // left motor group
 
 // Sensors
 #pragma region Sensors
-// create an imu on port 10
 pros::Imu imu(7);
-
-// create a v5 rotation sensor on port 1
 pros::Rotation horizontal_sensor(8);
-// create a v5 rotation sensor on port 1
 pros::Rotation vertical_sensor(9);
 
 // horizontal tracking wheel
