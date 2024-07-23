@@ -1,4 +1,5 @@
 #include "main.h"
+#include "lemlib/asset.hpp"
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/chassis/trackingWheel.hpp"
 #include "pros/abstract_motor.hpp"
@@ -25,13 +26,9 @@ lemlib::Drivetrain drivetrain(&left_motors, // left motor group
 
 // Sensors
 #pragma region Sensors
-// create an imu on port 10
-pros::Imu imu(4);
-
-// create a v5 rotation sensor on port 1
-pros::Rotation horizontal_sensor(9);
-// create a v5 rotation sensor on port 1
-pros::Rotation vertical_sensor(17);
+pros::Imu imu(7);
+pros::Rotation horizontal_sensor(8);
+pros::Rotation vertical_sensor(9);
 
 // horizontal tracking wheel
 lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_sensor, lemlib::Omniwheel::NEW_275, -1);
@@ -124,7 +121,7 @@ void logPosition(const std::string& positionName, const std::string& command, co
 
 void autonomous() {
     // set chassis pose
-    chassis.follow("static\real.txt", 15, 5000);
+    chassis.follow(skillspath_txt, 15, 5000);
 }   
 #pragma endregion
 
