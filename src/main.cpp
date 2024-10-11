@@ -3,8 +3,10 @@
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/chassis/trackingWheel.hpp"
 #include "pros/abstract_motor.hpp"
+#include "pros/adi.hpp"
 #include "pros/misc.hpp"
 #include "pros/motor_group.hpp"
+#include "pros/motors.hpp"
 #include "pros/rtos.hpp"
 #include <iostream>
 
@@ -13,34 +15,33 @@ using namespace pros;
 using namespace lemlib;
 using namespace rd;
 
-
 // Motor configuration
 #pragma region Motor Configuration
 MotorGroup left_motors({-8,-9, -10}, MotorGearset::blue);
-MotorGroup right_motors({1, 19, 20}, MotorGearset::blue);
+MotorGroup right_motors({11, 20, 13}, MotorGearset::blue);
 #pragma endregion
 
 // Drivetrain settings
 #pragma region Drivetrain Settings
 Drivetrain drivetrain(&left_motors, // left motor group
                               &right_motors, // right motor group
-                              15, // 10 inch track width
+                              13, // 10 inch track width
                               Omniwheel::NEW_325, // using new 4" omnis
-                              475, // drivetrain rpm is 360
+                              360, // drivetrain rpm is 360
                               2 // horizontal drift is 2 (for now)
 );
 #pragma endregion
 
 // Sensors
 #pragma region Sensors
-Imu imu(17);
-Rotation horizontal_sensor(5);
-Rotation vertical_sensor(11);
+Imu imu(1);
+Rotation horizontal_sensor(4);
+Rotation vertical_sensor(6);
 
 // horizontal tracking wheel
-TrackingWheel horizontal_tracking_wheel(&horizontal_sensor, Omniwheel::NEW_275, -3.5);
+TrackingWheel horizontal_tracking_wheel(&horizontal_sensor, Omniwheel::OLD_275, 4.5);
 // vertical tracking wheel
-TrackingWheel vertical_tracking_wheel(&vertical_sensor, Omniwheel::NEW_275, 2.25);
+TrackingWheel vertical_tracking_wheel(&vertical_sensor, Omniwheel::OLD_275, -1.0);
 
 OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel 1, set to null
                             nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs
@@ -54,6 +55,10 @@ OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel 1, set 
 #pragma region Operator Control
 Controller controller(E_CONTROLLER_MASTER);
 
+
+// Robot configuration
+pros::adi::Pneumatics mogoClamp('A', false);
+pros::Motor intake(18);
 // PID controllers
 #pragma region PID Controllers
 // lateral PID controller
@@ -99,11 +104,7 @@ void blue_right();
 void skills();
 
 // Robodash selector initialization...
-Selector selector({{"Red Left", &red_Rush},
-				   {"Red Right", &red_right},
-				   {"Blue Left", &blue_Rush},
-				   {"Blue Right", &blue_right},
-				   {"Skills", &skills}});
+Selector selector({{"lateral", &red_Rush}});
 
 // Robodash console initialization...
 Console console;
@@ -249,21 +250,50 @@ void competition_initialize() {}
 void logPosition(const std::string& positionName, const std::string& command, const Pose& pose) {
     std::cout << positionName << " - Command: " << command << " - X: " << pose.x << ", Y: " << pose.y << ", Theta: " << pose.theta << std::endl;
 }
-ASSET(curvetest_txt);
+ASSET(skillspath_txt);
+ASSET(fullfieldtest_txt)
 void autonomous() {
     console.println("Running auton...");
-	chassis.setPose(0, 0, 0); // Resets the position before running the auton
 	selector.run_auton();
 }
 
-void red_Rush(){}
+void red_Rush(){
+	chassis.moveToPoint(0, 0, 5000);
+	chassis.moveToPoint(0, 18.491, 5000);
+	chassis.moveToPoint(-0.083, 42.31, 5000);
+	chassis.moveToPoint(-23.832, 42.267, 5000);
+	chassis.moveToPoint(-23.546, 18.415, 5000);
+	chassis.moveToPoint(-23.446, 6.56, 5000);
+	chassis.moveToPoint(-35.651, 18.481, 5000);
+	chassis.moveToPoint(-41.325, 0.055, 5000);
+	chassis.moveToPoint(-35.896, 65.609, 5000);
+	chassis.moveToPoint(-26.94, 90.277, 5000);
+	chassis.moveToPoint(23.198, 113.333, 5000);
+	chassis.moveToPoint(-0.614, 88.929, 5000);
+	chassis.moveToPoint(46.15, 106.858, 5000);
+	chassis.moveToPoint(70.551, 89.888, 5000);
+	chassis.moveToPoint(82.118, 66.316, 5000);
+	chassis.moveToPoint(87.853, 131.363, 5000);
+	chassis.moveToPoint(70.451, 42.275, 5000);
+	chassis.moveToPoint(47.114, 42.153, 5000);
+	chassis.moveToPoint(47.256, 18.795, 5000);
+	chassis.moveToPoint(70.891, 18.589, 5000);
+	chassis.moveToPoint(70.958, 7.055, 5000);
+	chassis.moveToPoint(82.307, 19.079, 5000);
+	chassis.moveToPoint(88.566, 1.442, 5000);
+	chassis.moveToPoint(33.832, 53.161, 5000);
+}
+
 void red_right(){}
 void blue_Rush(){}
 void blue_right(){}
 void skills(){}
 #pragma endregion
 
-
+int toWattage(int power)
+{
+	return power / 100 * 127;
+}
 void opcontrol() {
     // loop forever
     while (true) {
@@ -274,8 +304,19 @@ void opcontrol() {
         // move the robot
         chassis.tank(leftY, rightY);
 
+		// mogo clamp
+		bool isClamped = mogoClamp.is_extended();
+		if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2))
+		{
+			mogoClamp.toggle();
+			pros::delay(100);
+			intake.move(toWattage(100));
+		} else {
+		intake.move(0);
+		}
         // delay to save resources
-        delay(25);
+       
+	    delay(25);
     }
 }
 #pragma endregion
