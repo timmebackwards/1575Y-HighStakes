@@ -8,6 +8,7 @@
 #include "pros/motor_group.hpp"
 #include "pros/motors.hpp"
 #include "pros/rtos.hpp"
+#include "robodash/views/selector.hpp"
 #include <iostream>
 
 using namespace std;
@@ -17,8 +18,8 @@ using namespace rd;
 
 // Motor configuration
 #pragma region Motor Configuration
-MotorGroup left_motors({-8,-9, -10}, MotorGearset::blue);
-MotorGroup right_motors({11, 20, 13}, MotorGearset::blue);
+MotorGroup left_motors({-8,-9, 10}, MotorGearset::blue);
+MotorGroup right_motors({-6, 4, 5}, MotorGearset::blue);
 #pragma endregion
 
 // Drivetrain settings
@@ -35,13 +36,13 @@ Drivetrain drivetrain(&left_motors, // left motor group
 // Sensors
 #pragma region Sensors
 Imu imu(1);
-Rotation horizontal_sensor(4);
-Rotation vertical_sensor(6);
+Rotation horizontal_sensor(7);
+Rotation vertical_sensor(11);
 
 // horizontal tracking wheel
-TrackingWheel horizontal_tracking_wheel(&horizontal_sensor, Omniwheel::OLD_275, 4.5);
+TrackingWheel horizontal_tracking_wheel(&horizontal_sensor, Omniwheel::NEW_2, 4.5);
 // vertical tracking wheel
-TrackingWheel vertical_tracking_wheel(&vertical_sensor, Omniwheel::OLD_275, -1.0);
+TrackingWheel vertical_tracking_wheel(&vertical_sensor, Omniwheel::NEW_2, -1.0);
 
 OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel 1, set to null
                             nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs
@@ -58,7 +59,9 @@ Controller controller(E_CONTROLLER_MASTER);
 
 // Robot configuration
 pros::adi::Pneumatics mogoClamp('A', false);
-pros::Motor intake(18);
+pros::Motor intake(2);
+pros::Motor secondStage(-21);
+
 // PID controllers
 #pragma region PID Controllers
 // lateral PID controller
@@ -97,14 +100,16 @@ Chassis chassis(drivetrain, // drivetrain settings
 #pragma endregion
 
 // Declare functions for selector...
-void red_Rush();
-void red_right();
-void blue_Rush();
-void blue_right();
-void skills();
+void red_Solo();
+void red_Finals();
 
 // Robodash selector initialization...
-Selector selector({{"lateral", &red_Rush}});
+Selector selector(
+	{
+		{"Red Solo", &red_Solo},
+		{"Red Finals", &red_Finals},
+	}
+);
 
 // Robodash console initialization...
 Console console;
@@ -257,37 +262,14 @@ void autonomous() {
 	selector.run_auton();
 }
 
-void red_Rush(){
-	chassis.moveToPoint(0, 0, 5000);
-	chassis.moveToPoint(0, 18.491, 5000);
-	chassis.moveToPoint(-0.083, 42.31, 5000);
-	chassis.moveToPoint(-23.832, 42.267, 5000);
-	chassis.moveToPoint(-23.546, 18.415, 5000);
-	chassis.moveToPoint(-23.446, 6.56, 5000);
-	chassis.moveToPoint(-35.651, 18.481, 5000);
-	chassis.moveToPoint(-41.325, 0.055, 5000);
-	chassis.moveToPoint(-35.896, 65.609, 5000);
-	chassis.moveToPoint(-26.94, 90.277, 5000);
-	chassis.moveToPoint(23.198, 113.333, 5000);
-	chassis.moveToPoint(-0.614, 88.929, 5000);
-	chassis.moveToPoint(46.15, 106.858, 5000);
-	chassis.moveToPoint(70.551, 89.888, 5000);
-	chassis.moveToPoint(82.118, 66.316, 5000);
-	chassis.moveToPoint(87.853, 131.363, 5000);
-	chassis.moveToPoint(70.451, 42.275, 5000);
-	chassis.moveToPoint(47.114, 42.153, 5000);
-	chassis.moveToPoint(47.256, 18.795, 5000);
-	chassis.moveToPoint(70.891, 18.589, 5000);
-	chassis.moveToPoint(70.958, 7.055, 5000);
-	chassis.moveToPoint(82.307, 19.079, 5000);
-	chassis.moveToPoint(88.566, 1.442, 5000);
-	chassis.moveToPoint(33.832, 53.161, 5000);
-}
+void red_Solo()
+{
 
-void red_right(){}
-void blue_Rush(){}
-void blue_right(){}
-void skills(){}
+}
+void red_Finals()
+{
+
+}
 #pragma endregion
 
 int toWattage(int power)
@@ -305,14 +287,21 @@ void opcontrol() {
         chassis.tank(leftY, rightY);
 
 		// mogo clamp
-		bool isClamped = mogoClamp.is_extended();
-		if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2))
+		if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1))
 		{
 			mogoClamp.toggle();
-			pros::delay(100);
-			intake.move(toWattage(100));
+		}
+
+		if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1))
+		{
+			intake.move(100);
+			secondStage.move(70);
+		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+			intake.move(-100);
+			secondStage.move(-70);
 		} else {
-		intake.move(0);
+			intake.move(0);
+			secondStage.move(toWattage(0));
 		}
         // delay to save resources
        
