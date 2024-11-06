@@ -3,3 +3,5 @@
 #include "api.h"
 
 bool isPluggedIn(int port);
+
+void Clamp();

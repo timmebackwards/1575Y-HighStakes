@@ -40,7 +40,6 @@ EXCLUDE_SRC_FROM_LIB+=$(foreach file, $(SRCDIR)/main,$(foreach cext,$(CEXTS),$(f
 TEMPLATE_FILES=$(INCDIR)/$(LIBNAME)/*.h $(INCDIR)/$(LIBNAME)/*.hpp
 
 .DEFAULT_GOAL=quick
-
 ################################################################################
 ################################################################################
 ########## Nothing below this line should be edited by typical users ###########
