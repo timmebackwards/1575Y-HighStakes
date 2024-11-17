@@ -132,7 +132,7 @@ void RedLeft();
 void RedRight();
 void BlueLeft();
 void BlueRight();
-
+void Skills();
 // Autonomous Selector and Screen Display Variables
 int selectedAuton = 1;
 
@@ -153,7 +153,7 @@ void initialize() {
             }
 
             // Update the auton names array and display selectedAuton
-            const char* autonNames[] = {"None", "Red Left", "Red Right", "Blue Left", "Blue Right"};
+            const char* autonNames[] = {"None", "Red Left", "Red Right", "Blue Left", "Blue Right", "Skills Auto"};
             pros::lcd::print(1, "X: %f", chassis.getPose().x);
             pros::lcd::print(2, "Y: %f", chassis.getPose().y);
             pros::lcd::print(3, "Theta: %f", chassis.getPose().theta);
@@ -208,6 +208,7 @@ void doink() {
     }
     delay(250);
 }
+
 ASSET(skillspath_txt);
 ASSET(fullfieldtest_txt)
 void autonomous() {
@@ -220,6 +221,8 @@ void autonomous() {
         BlueLeft();
     } else if (selectedAuton == 4) {
         BlueRight();
+    } else if (selectedAuton == 5) {
+        Skills();
     } else {
         pros::lcd::print(1, "No autonomous selected.");
     }
@@ -235,35 +238,8 @@ void RedLeft()
         delay(50);
     }
     intake.move(0);
-    chassis.moveToPoint(0, -8.5, 1000, {.forwards = false});
-    chassis.waitUntilDone();
-    clampMogo();
-    delay(400);
-    intake.move(100);
-    delay(300);
-    chassis.turnToHeading(90, 1000);
-    chassis.waitUntilDone();
-    secondStage.move(127);
-    intake.move(127);
-    chassis.setPose(0, 0, 90);
-    chassis.moveToPoint(18, 0, 1000);
-    chassis.waitUntilDone();
-    chassis.turnToHeading(180, 1000);
-    chassis.waitUntilDone();
-    chassis.setPose(0, 0, 0);
-    chassis.moveToPoint(0, 13, 1000);
-    chassis.waitUntilDone();
-    chassis.turnToHeading(140, 1000);
-    chassis.waitUntilDone();
-    chassis.setPose(0, 0, 0);
-    chassis.moveToPoint(0, 19, 1000, {.maxSpeed = 50});
-    chassis.setPose(0, 0, 0);
-    chassis.turnToHeading(270, 1000);
-    chassis.waitUntilDone();
-    chassis.moveToPose(0, 15, 270, 1000);
-    chassis.waitUntilDone();
-    chassis.setPose(0, 0, 0);
-    chassis.moveToPoint(0, 23, 1000);
+    chassis.moveToPoint(0, -30, 1000, {.forwards = false, .maxSpeed = 60});
+    
 }
 
 void RedRight()
@@ -276,7 +252,7 @@ void RedRight()
         delay(50);
     }
     intake.move(0);
-    chassis.moveToPoint(0, -10, 1000, {.forwards = false});
+    chassis.moveToPoint(0, -34, 1000, {.forwards = false, .maxSpeed=100});
     chassis.waitUntilDone();
     clampMogo();
     delay(300);
@@ -290,7 +266,7 @@ void RedRight()
     secondStage.move(127);
     delay(300);
     chassis.setPose(0, 0, 0);
-    chassis.moveToPoint(0, 15, 1000);
+    chassis.moveToPoint(0, 17, 1000);
     chassis.waitUntilDone();
     delay(1500);
     intake.move(0);
@@ -308,27 +284,29 @@ void BlueLeft()
         delay(50);
     }
     intake.move(0);
-    chassis.moveToPoint(0, -7.5, 1000, {.forwards = false});
+    chassis.moveToPoint(0, -32, 1000, {.forwards = false, .maxSpeed = 70});
     chassis.waitUntilDone();
     clampMogo();
     delay(300);
-    intake.move(127);
-    delay(300);
+    intake.move(100);
+    delay(500);
     intake.move(0);
     delay(400);
     chassis.turnToHeading(90, 1000);
     chassis.waitUntilDone();
-    intake.move(127);
-    secondStage.move(127);
+    intake.move(100);
+    secondStage.move(80);
     delay(300);
     chassis.setPose(0, 0, 0);
-    chassis.moveToPoint(0, 15, 1000);
+    chassis.moveToPoint(0, 13, 1000, {.maxSpeed = 80});
     chassis.waitUntilDone();
+    delay(300);
+    intake.move(0);
 }
 
 void BlueRight()
 {
-        chassis.setPose(0, 0, 0);
+    chassis.setPose(0, 0, 0);
     while(!isRingDetected())
     {
         colorSensor.set_led_pwm(25);
@@ -336,37 +314,110 @@ void BlueRight()
         delay(50);
     }
     intake.move(0);
-    chassis.moveToPoint(0, -8.5, 1000, {.forwards = false});
+    chassis.moveToPoint(0, -28, 1000, {.forwards = false});
     chassis.waitUntilDone();
     clampMogo();
     delay(400);
     intake.move(100);
     delay(300);
-    chassis.turnToHeading(-90, 1000);
+    chassis.moveToPose(-12, -34, 242, 1000);
     chassis.waitUntilDone();
-    secondStage.move(127);
-    intake.move(127);
-    chassis.setPose(0, 0, 90);
-    chassis.moveToPoint(18, 0, 1000);
+    chassis.turnToHeading(270, 1000);
     chassis.waitUntilDone();
-    chassis.turnToHeading(-180, 1000);
+    intake.move(100);
+    secondStage.move(100);
+    chassis.moveToPoint(-26, -34, 1000);
     chassis.waitUntilDone();
-    chassis.setPose(0, 0, 0);
-    chassis.moveToPoint(0, 13, 1000);
+    intake.move(0);
+    secondStage.move(0);
+    chassis.turnToHeading(180, 1000);
     chassis.waitUntilDone();
-    chassis.turnToHeading(-140, 1000);
+    chassis.moveToPoint(-26.667, -48, 1000);
     chassis.waitUntilDone();
-    chassis.setPose(0, 0, 0);
-    chassis.moveToPoint(0, 19, 1000, {.maxSpeed = 50});
-    chassis.setPose(0, 0, 0);
-    chassis.turnToHeading(-270, 1000);
+    chassis.turnToHeading(70, 1000);
     chassis.waitUntilDone();
-    chassis.moveToPose(0, 15, -270, 1000);
-    chassis.waitUntilDone();
-    chassis.setPose(0, 0, 0);
-    chassis.moveToPoint(0, 23, 1000);
+    chassis.moveToPoint(23.8, -33, 1000);
 }
 
+void Skills()
+{
+    chassis.setPose(0, 0, 0);
+    while(!isRingDetected())
+    {
+        colorSensor.set_led_pwm(25);
+        intake.move(50);
+        delay(50);
+    }
+    intake.move(0);
+    chassis.moveToPoint(1.8, -8.3, 1000, {.forwards = false, .maxSpeed = 80});
+    chassis.waitUntilDone();
+    clampMogo();
+    delay(300);
+    intake.move(100);
+    secondStage.move(100);
+    chassis.moveToPose(16.7, -29.3, 143.9, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(33.7, -17.2, 50, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(57.2, -25.9, 109, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(26.018, -2.013, 306.7, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(27.6, 2, 17.7, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(18, 7, 304, 1000);
+    chassis.waitUntilDone();
+    intake.move(0);
+    secondStage.move(0);
+    chassis.moveToPose(19, 18.156, 185.6, 1000, {.forwards = false});
+    chassis.waitUntilDone();
+    clampMogo();
+    chassis.moveToPose(-17.7, -30, 50, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(-25, -36.5, 50, 1000);
+    chassis.waitUntilDone();
+    intake.move(100);
+    secondStage.move(100);
+    chassis.moveToPose(-18.8, -56.2, 173.3, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(8.7, -62.7, 97.4, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(-34.7, -71.4, 200, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(-47.1, -62.097, 309.7, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(-55.2, -64.532, 254.6, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(-58.9, -54, 3.2, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(33.7, -17.2, 50, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(-70, -55.884, 85.8, 1000);
+    chassis.waitUntilDone();
+    clampMogo();
+    delay(300);
+    chassis.moveToPose(44.9, -96.3, 6.6, 1000);
+    chassis.waitUntilDone();
+    clampMogo();
+    delay(300);
+    intake.move(100);
+    secondStage.move(100);
+    chassis.moveToPose(19, -97.101, 266.7, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(0, -109.6, 238.4, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(-24.5, -103, 290, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(7, -149.9, 3.2, 1000);
+    chassis.waitUntilDone();
+    clampMogo();
+    delay(300);
+    chassis.moveToPose(26.6, -109, 50, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(62.399, -100.4, 70, 1000);
+    chassis.waitUntilDone();
+    chassis.moveToPose(103, -73.4, 60, 1000);
+}
 #pragma endregion
 
 int toWattage(int power)
@@ -375,15 +426,15 @@ int toWattage(int power)
 }
 
 void opcontrol() {
-    const char* autonNames[] = {"None", "Red Left", "Red Right", "Blue Left", "Blue Right"};
+    const char* autonNames[] = {"None", "Red Left", "Red Right", "Blue Left", "Blue Right", "Skills"};
     const char* colorNames[] = {"None", "Blue", "Red"};
 
     while (true) {
         // Auton and color selector controls
         if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-            selectedAuton = (selectedAuton + 1) % 5;  // Adjust range if adding more autons
+            selectedAuton = (selectedAuton + 1) % 6;  // Adjust range if adding more autons
         } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
-            selectedAuton = (selectedAuton == 0) ? 4 : selectedAuton - 1;  // Adjust range if adding more autons
+            selectedAuton = (selectedAuton == 0) ? 5 : selectedAuton - 1;  // Adjust range if adding more autons
         }
 
         colorSensor.set_led_pwm(25);
@@ -407,11 +458,16 @@ void opcontrol() {
         // Toggle mogoClamp with L1 button
         if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) clampMogo();
 
-        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) doink();
+        if(controller.get_digital(E_CONTROLLER_DIGITAL_L2))
+        {
+            doinker.retract();
+        } else {
+            doinker.extend();
+        }
 
         // Intake management with auto-sorting
         if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-                intake.move(100);
+                intake.move(127);
                 secondStage.move(127);
         } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
             // Manual reverse intake with R2 button
