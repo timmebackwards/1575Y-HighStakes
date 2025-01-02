@@ -192,34 +192,29 @@ void autonomous() {
 void RedLeft()
 {
     chassis.setPose(0, 0, 0);
-    chassis.moveToPoint(0, -30, 1000, {.forwards = false});
+    chassis.moveToPoint(0, -33, 1000, {.forwards = false, .maxSpeed = 80});
     chassis.waitUntilDone();
     clampMogo();
     delay(300);
     spinIntake(127);
-    chassis.turnToHeading(90, 1000);
+    chassis.turnToHeading(70, 1000);
     chassis.waitUntilDone();
-    chassis.moveToPoint(28, -30, 1000);
+    delay(200);
+    chassis.moveToPoint(28, -24, 1000);
     chassis.waitUntilDone();
-    chassis.turnToHeading(180, 1000);
+    delay(200);
+    chassis.turnToHeading(162, 1000);
     chassis.waitUntilDone();
-    chassis.moveToPoint(27, -43, 1000);
+    delay(200);
+    chassis.moveToPoint(33, -38, 1000);
     chassis.waitUntilDone();
-    chassis.turnToHeading(290, 1000);
+    delay(200);
+    chassis.turnToHeading(242, 1000);
     chassis.waitUntilDone();
-    chassis.moveToPoint(19, -40, 1000);
+    delay(200);
+    chassis.moveToPoint(-3, -54, 1000);
     chassis.waitUntilDone();
-    chassis.turnToHeading(170, 1000);
-    chassis.waitUntilDone();
-    chassis.moveToPoint(19, -46, 1000);
-    chassis.waitUntilDone();
-    chassis.turnToHeading(300, 1000);
-    chassis.waitUntilDone();
-    chassis.moveToPoint(9, -40, 1000);
-    chassis.waitUntilDone();
-    chassis.turnToHeading(250, 1000);
-    chassis.waitUntilDone();
-    chassis.moveToPoint(-10, -49, 1000);
+    delay(200);
     spinIntake(0);
 }
 
@@ -230,16 +225,10 @@ void RedRight()
     chassis.waitUntilDone();
     clampMogo();
     delay(300);
-    chassis.turnToHeading(80, 1000);
-    chassis.waitUntilDone();
     spinIntake(127);
-    chassis.moveToPoint(32, -22, 1000);
-    chassis.waitUntilDone();
     chassis.turnToHeading(270, 1000);
     chassis.waitUntilDone();
-    chassis.moveToPoint(-19, -28, 1000);
-    chassis.waitUntilDone();
-    chassis.moveToPoint(-23, -7, 1000);
+    chassis.moveToPoint(-25, -28, 1000);
     chassis.waitUntilDone();
     delay(300);
     spinIntake(0);
