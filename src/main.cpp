@@ -11,6 +11,7 @@
 #include "pros/motors.hpp"
 #include "pros/optical.hpp"
 #include "pros/rotation.hpp"
+#include "pros/rtos.h"
 #include "pros/rtos.hpp"
 #include "util.h"
 #include <algorithm>
@@ -71,7 +72,7 @@ Controller controller(E_CONTROLLER_MASTER);
 adi::Pneumatics mogoClamp('H', false);
 pros::Motor intake(-3);
 pros::Motor secondStage(-20);
-pros::Motor fish(0);
+pros::Motor fish(15);
 
 // PID controllers
 #pragma region PID Controllers
@@ -185,96 +186,126 @@ void autonomous() {
     } else if (selectedAuton == 5) {
         Skills();
     } else {
-        pros::lcd::print(1, "No autonomous selected.");
+        pros::lcd::print(1, "No autonomous selected ho.");
     }
 }
 
 void RedLeft()
 {
-    chassis.setPose(0, 0, 0);
-    chassis.moveToPoint(0, -33, 1000, {.forwards = false, .maxSpeed = 80});
+    chassis.setPose(0, 0, 0); // initializes the auton.
+
+    // Moves the fish mech so that we score 1 ring on the alliance wall stake.
+    fish.move(127);
+    delay(400);
+    fish.move(-127);
+    delay(400);
+    fish.move(0);
+
+    // Then the robot moves toward the mogo, then clamps it.
+    chassis.moveToPoint(0, -32, 1000, {.forwards = false});
+    chassis.waitUntilDone();
+    chassis.turnToHeading(100, 10000, {.maxSpeed = 80, .minSpeed = 60});
+    chassis.waitUntilDone();
+    chassis.setPose(0,0,0);
+    chassis.moveToPoint(0, -20, 1000, {.forwards = false});
     chassis.waitUntilDone();
     clampMogo();
-    delay(300);
+    delay(100);
+    chassis.turnToHeading(45, 1000);
+
+    // done virtually
     spinIntake(127);
-    chassis.turnToHeading(70, 1000);
+    chassis.moveToPoint(15, -6, 1000);
     chassis.waitUntilDone();
-    delay(200);
-    chassis.moveToPoint(28, -24, 1000);
+    chassis.turnToHeading(157, 1000);
     chassis.waitUntilDone();
-    delay(200);
-    chassis.turnToHeading(162, 1000);
+    chassis.moveToPoint(28, -12, 1000);
     chassis.waitUntilDone();
-    delay(200);
-    chassis.moveToPoint(33, -38, 1000);
+    chassis.turnToHeading(-20, 1000);
     chassis.waitUntilDone();
-    delay(200);
-    chassis.turnToHeading(242, 1000);
+
+    chassis.setPose(0,0,0);
+    chassis.moveToPoint(0, 60, 1000);
     chassis.waitUntilDone();
-    delay(200);
-    chassis.moveToPoint(-3, -54, 1000);
-    chassis.waitUntilDone();
-    delay(200);
+    // chassis.turnToHeading(238, 1000);
+    // chassis.waitUntilDone();
+    // chassis.moveToPoint(-33, -14, 1000);
+    // chassis.waitUntilDone();
+    // chassis.moveToPose(-37.5, -17, 238, 1000);
+    // chassis.waitUntilDone();
+    // chassis.moveToPoint(-21, -34, 1000);
     spinIntake(0);
+    clampMogo();
 }
 
 void RedRight()
 {
     chassis.setPose(0, 0, 0);
-    chassis.moveToPoint(1, -29.4, 1000, {.forwards = false});
+    
+    // Moves the fish mech so that we score 1 ring on the alliance wall stake.
+    fish.move(80);
+    delay(400);
+    fish.move(-80);
+    delay(400);
+    fish.move(0);
+
+    // Then the robot moves toward the mogo, then clamps it.
+    chassis.moveToPoint(0, -25, 1000, {.forwards = false});
     chassis.waitUntilDone();
+    chassis.turnToHeading(280, 10000, {.maxSpeed = 80, .minSpeed = 60});
+    chassis.waitUntilDone();
+    chassis.setPose(0,0,0);
     clampMogo();
     delay(300);
+    chassis.moveToPoint(0, -20, 1000, {.forwards = false});
+    chassis.waitUntilDone();
+    clampMogo();
     spinIntake(127);
-    chassis.turnToHeading(270, 1000);
+    chassis.moveToPoint(-21, 0, 1000);
     chassis.waitUntilDone();
-    chassis.moveToPoint(-25, -28, 1000);
+    chassis.moveToPoint(-26, 46, 1000);
     chassis.waitUntilDone();
-    delay(300);
-    spinIntake(0);
+    chassis.moveToPoint(-27, 21, 1000);
+    chassis.waitUntilDone(); 
+    clampMogo();
 }
 
 void BlueLeft()
 {
     chassis.setPose(0, 0, 0);
-    chassis.moveToPoint(0, -25.4, 1000, {.forwards = false});
+    chassis.moveToPoint(-0.42, -35.4, 1000, {.forwards = false, .maxSpeed = 80});
     chassis.waitUntilDone();
     clampMogo();
-    delay(300);
-    chassis.turnToHeading(290, 1000);
-    chassis.waitUntilDone();
     spinIntake(127);
-    chassis.moveToPoint(-31, -18, 1000);
-    chassis.waitUntilDone();
-    chassis.turnToHeading(100, 1000);
-    chassis.waitUntilDone();
-    chassis.moveToPoint(20.4, -24, 1000);
-    chassis.waitUntilDone();
     delay(300);
+    chassis.turnToHeading(90, 1000);
+    chassis.setPose(0,0,0);
+    chassis.moveToPoint(14, 0, 1000);
     spinIntake(0);
+    clampMogo();
 }
 
 void BlueRight()
 {
     chassis.setPose(0, 0, 0);
-    chassis.moveToPoint(0, -29, 1000, {.forwards = false});
+    chassis.moveToPoint(0.3, -35.4, 1000, {.forwards = false, .maxSpeed = 80});
     chassis.waitUntilDone();
     clampMogo();
-    delay(300);
-    chassis.turnToHeading(240, 1000);
-    chassis.waitUntilDone();
     spinIntake(127);
-    chassis.moveToPoint(-23.1, -45, 1000);
+    delay(300);
+    chassis.turnToHeading(269, 1000);
     chassis.waitUntilDone();
-    chassis.turnToHeading(30, 1000);
+    chassis.moveToPoint(-23.3,-35.4, 1000);
     chassis.waitUntilDone();
-    chassis.moveToPoint(10, -10, 1000);
+    chassis.turnToHeading(177, 1000);
     chassis.waitUntilDone();
-    chassis.turnToHeading(160, 1000);
+    chassis.moveToPoint(-24, -49, 1000);
     chassis.waitUntilDone();
-    chassis.moveToPoint(17, -27.6, 1000);
+    chassis.moveToPoint(-24.5, -12, 1000, {.forwards = false});
     chassis.waitUntilDone();
+    chassis.moveToPoint(-24, -49, 1000);
     spinIntake(0);
+    clampMogo();   
 }
 
 void Skills()
@@ -371,15 +402,19 @@ void opcontrol() {
         int rightY = controller.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y);
         chassis.tank(leftY, rightY);
 
-        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) clampMogo();
+        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) fish.move(80);
+        else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) fish.move(-80);
+        else fish.move(0);
+
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) clampMogo();
         if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-                intake.move(127);
+                spinIntake(127);
                 secondStage.move(127);
         } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
             intake.move(-127);
             secondStage.move(-127);
         } else {
-            intake.move(0);
+            spinIntake(0);
             secondStage.move(0);
         }
 
